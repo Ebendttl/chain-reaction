@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChainReaction — Reachy Mini × 0G</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   CHAINREACTION THEME — Dark Glassmorphism, 0G Purple & Cyan
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  --bg: #0B0A11;
+  --surface: rgba(22, 20, 34, 0.6);
+  --surface-hover: rgba(35, 32, 53, 0.8);
+  --surface-border: rgba(255, 255, 255, 0.08);
+  --accent: #A855F7; /* 0G Purple */
+  --accent-glow: rgba(168, 85, 247, 0.4);
+  --cyan: #06B6D4; /* 0G Chain Cyan */
+  --cyan-glow: rgba(6, 182, 212, 0.4);
+  --green: #10B981; /* Success Green */
+  --text-primary: #F3F4F6;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
+  --danger: #EF4444;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  background-image: radial-gradient(circle at 10% 20%, rgba(90, 40, 150, 0.15) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 45%);
+  color: var(--text-primary);
+  height: 100vh;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* App Layout */
+.app-shell {
+  display: grid;
+  grid-template-columns: 320px 1fr 380px;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+}
+
+/* Header */
+.topbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: rgba(11, 10, 17, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--surface-border);
+  z-index: 10;
+}
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.topbar-brand svg {
+  width: 28px;
+  height: 28px;
+  color: var(--accent);
+  filter: drop-shadow(0 0 8px var(--accent-glow));
+}
+.topbar-brand h1 {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.topbar-brand span {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--cyan);
+  padding: 3px 8px;
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: 6px;
+  font-weight: 600;
+}
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.wallet-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--surface-border);
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-out);
+}
+.wallet-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--cyan);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.2);
+}
+.wallet-btn.connected {
+  border-color: var(--green);
+  background: rgba(16, 185, 129, 0.1);
+}
+.wallet-btn svg { width: 16px; height: 16px; color: var(--cyan); }
+
+#status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+#status::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+#status.connected { color: var(--green); }
+#status.connected::before {
+  background: var(--green);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Left Sidebar — Behavior Library */
+.sidebar-left {
+  background: rgba(15, 14, 23, 0.5);
+  border-right: 1px solid var(--surface-border);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+}
+.panel-title {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+.behavior-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.behavior-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s var(--ease-out);
+}
+.behavior-card:hover {
+  background: var(--surface-hover);
+  border-color: rgba(168, 85, 247, 0.3);
+  transform: translateY(-1px);
+}
+.behavior-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.behavior-emoji {
+  font-size: 20px;
+}
+.behavior-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+.behavior-badge {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.behavior-badge.free {
+  background: rgba(16, 185, 129, 0.1);
+  color: #34D399;
+}
+.behavior-badge.premium {
+  background: rgba(168, 85, 247, 0.1);
+  color: #C084FC;
+}
+.behavior-lock {
+  color: var(--text-muted);
+}
+.behavior-lock svg { width: 14px; height: 14px; }
+
+/* Center Viewport */
+.viewport {
+  position: relative;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid var(--surface-border);
+}
+#sim-container {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Right Panel — Chat & Chain Activity */
+.right-panel {
+  display: grid;
+  grid-template-rows: 1fr 180px;
+  background: rgba(15, 14, 23, 0.5);
+  overflow: hidden;
+}
+
+/* Conversation */
+.conversation {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-bottom: 1px solid var(--surface-border);
+}
+#transcript {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.msg {
+  max-width: 85%;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  line-height: 1.5;
+  animation: msgIn 0.3s var(--ease-spring) both;
+}
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.msg.user {
+  align-self: flex-end;
+  background: var(--accent);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+.msg.bot {
+  align-self: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  color: var(--text-primary);
+  border-bottom-left-radius: 4px;
+}
+.msg.system {
+  align-self: center;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  text-align: center;
+}
+
+/* Chat Input */
+.input-area {
+  padding: 16px;
+  background: rgba(11, 10, 17, 0.4);
+}
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  padding: 4px 4px 4px 16px;
+  transition: all 0.2s var(--ease-out);
+}
+.input-row:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+#chat-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: 8px 0;
+}
+#mic-btn, #send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-out);
+}
+#mic-btn {
+  background: transparent;
+  color: var(--text-secondary);
+}
+#mic-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+#send-btn {
+  background: var(--accent);
+  color: white;
+}
+#send-btn:hover { transform: scale(1.05); }
+
+/* Recording state */
+.rec-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--danger);
+  border-radius: var(--radius-lg);
+  padding: 4px 12px;
+  animation: recRowIn 0.3s var(--ease-spring);
+}
+@keyframes recRowIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+.rec-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+  animation: recBlink 1s ease-in-out infinite;
+}
+@keyframes recBlink { 50% { opacity: 0.3; } }
+.rec-timer { font-family: var(--font-mono); font-size: 13px; color: white; }
+#rec-waveform { flex: 1; height: 32px; opacity: 0.8; }
+.rec-stop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  color: var(--danger);
+  cursor: pointer;
+}
+
+/* Chain Activity Panel */
+.chain-feed {
+  border-top: 1px solid var(--surface-border);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: rgba(11, 10, 17, 0.6);
+}
+.feed-content {
+  flex: 1;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.feed-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--cyan);
+  animation: feedIn 0.3s var(--ease-out) both;
+}
+@keyframes feedIn {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.feed-time { color: var(--text-muted); }
+.feed-tx-link { color: var(--cyan); text-decoration: underline; cursor: pointer; }
+
+/* Setup Overlay */
+#setup {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(11, 10, 17, 0.9);
+  backdrop-filter: blur(20px);
+}
+#setup.hidden { display: none; }
+.setup-card {
+  width: 90%;
+  max-width: 460px;
+  background: rgba(22, 20, 34, 0.85);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+}
+.setup-card h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.setup-card h2 svg { color: var(--accent); width: 24px; height: 24px; }
+.setup-card p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+.field-group { margin-bottom: 14px; }
+.field-group label {
+  display: block;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.field-group input, .field-group select {
+  width: 100%;
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--surface-border);
+  color: white;
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+.field-group input:focus { border-color: var(--accent); }
+.field-hint { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+.setup-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  border: none;
+  color: white;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  margin-top: 14px;
+}
+.setup-btn:hover { background: #9333EA; }
+#cfg-err { color: var(--danger); font-size: 12px; margin-top: 10px; display: none; }
+
+/* Pay Modal */
+#pay-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+#pay-modal-overlay.visible { opacity: 1; pointer-events: auto; }
+.pay-modal {
+  background: rgba(22, 20, 34, 0.95);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  box-shadow: 0 0 40px rgba(6, 182, 212, 0.2);
+  border-radius: var(--radius-lg);
+  width: 380px;
+  padding: 30px;
+  text-align: center;
+  transform: scale(0.9);
+  transition: transform 0.3s var(--ease-spring);
+}
+#pay-modal-overlay.visible .pay-modal { transform: scale(1); }
+.pay-icon { font-size: 48px; margin-bottom: 16px; }
+.pay-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.pay-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+.pay-price {
+  font-size: 32px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--cyan);
+  margin-bottom: 24px;
+}
+.pay-action-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--cyan);
+  border: none;
+  color: white;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+.pay-action-btn:hover { background: #0891B2; }
+.pay-cancel-btn {
+  margin-top: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 13px;
+}
+.pay-cancel-btn:hover { color: var(--text-secondary); }
+
+/* Hidden remote video for WebRTC */
+#remoteVideo { display: none; }
+</style>
+</head>
+<body>
+
+<!-- Setup Overlay -->
+<div id="setup">
+  <div class="setup-card">
+    <h2>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      ChainReaction Setup
+    </h2>
+    <p>Setup your 0G integration and WebRTC settings to begin.</p>
+    <div id="cfg-err"></div>
+
+    <div class="field-group">
+      <label>0G Chat API Key</label>
+      <input id="cfg-chat-key" type="password" placeholder="app-sk-..." />
+      <div class="field-hint">Compute key for <code>zai-org/GLM-5-FP8</code></div>
+    </div>
+
+    <div class="field-group">
+      <label>0G STT API Key (Whisper)</label>
+      <input id="cfg-stt-key" type="password" placeholder="app-sk-..." />
+      <div class="field-hint">Compute key for <code>openai/whisper-large-v3</code></div>
+    </div>
+
+    <div class="field-group">
+      <label>Behavior Gate Contract Address</label>
+      <input id="cfg-contract-addr" type="text" placeholder="0x..." />
+      <div class="field-hint">Deployed address of <code>BehaviorGate.sol</code></div>
+    </div>
+
+    <div class="field-group">
+      <label>Behavior Storage Root Hash</label>
+      <input id="cfg-root-hash" type="text" placeholder="0x..." />
+      <div class="field-hint">Optional root hash of behavior config on 0G Storage</div>
+    </div>
+
+    <div class="field-group">
+      <label>Robot Mode</label>
+      <select id="cfg-robot">
+        <option value="sim">3D Simulator</option>
+        <option value="live">Live Robot (WebRTC)</option>
+      </select>
+    </div>
+
+    <button class="setup-btn" onclick="startApp()">Start Session</button>
+  </div>
+</div>
+
+<!-- Pay Modal Overlay -->
+<div id="pay-modal-overlay">
+  <div class="pay-modal">
+    <div class="pay-icon" id="pay-modal-emoji">🕺</div>
+    <div class="pay-title" id="pay-modal-title">Unlock Behavior</div>
+    <div class="pay-desc" id="pay-modal-desc">This premium action is gated on-chain. Send payment to unlock it permanently.</div>
+    <div class="pay-price" id="pay-modal-price">0.01 0G</div>
+    <button class="pay-action-btn" id="pay-modal-action-btn" onclick="processPayment()">Unlock with MetaMask</button>
+    <button class="pay-cancel-btn" onclick="closePayModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- Main App Shell -->
+<div class="app-shell">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <h1>ChainReaction</h1>
+      <span>0G Chain Enabled</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="wallet-btn" id="wallet-btn" onclick="connectWallet()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M18 10v4"/></svg>
+        <span id="wallet-status-text">Connect Wallet</span>
+      </button>
+      <div id="status">offline</div>
+    </div>
+  </div>
+
+  <!-- Left Sidebar (Behavior Library) -->
+  <div class="sidebar-left">
+    <div class="panel-title">Behavior Library</div>
+    <div class="behavior-grid" id="behavior-grid">
+      <!-- Generated dynamically -->
+    </div>
+  </div>
+
+  <!-- Center Viewport (3D Simulator) -->
+  <div class="viewport">
+    <div id="sim-container"></div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+    <!-- Conversation history -->
+    <div class="conversation">
+      <div class="conv-header" style="padding: 16px 20px; border-bottom: 1px solid var(--surface-border);">
+        <h2 style="font-size: 13px; font-weight: 500; color: var(--text-secondary);">Dialogue Logs</h2>
+      </div>
+      <div id="transcript"></div>
+      <div class="input-area">
+        <div class="input-row" id="input-default">
+          <input id="chat-input" placeholder="Say a command..." autocomplete="off" />
+          <button id="mic-btn" onclick="toggleRecording()" title="Record voice">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </button>
+          <button id="send-btn" onclick="sendMessage()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+          </button>
+        </div>
+        <div class="rec-row" id="input-recording" style="display:none;">
+          <div class="rec-dot"></div>
+          <div class="rec-timer" id="rec-timer">0:00</div>
+          <canvas id="rec-waveform"></canvas>
+          <button class="rec-stop" onclick="stopRecording()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- On-chain activity logs -->
+    <div class="chain-feed">
+      <div class="panel-title">0G Chain Activity</div>
+      <div class="feed-content" id="feed-content">
+        <div class="feed-item"><span class="feed-time">[System]</span> Welcome to ChainReaction. Connect MetaMask.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<video id="remoteVideo" autoplay playsinline></video>
+
+<!-- Core external dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.1/dist/ethers.umd.min.js"></script>
+
+<!-- 3D Sim & SDK modules -->
+<script type="module">
+import { ReachySim } from './sim.js';
+window.ReachySim = ReachySim;
+</script>
+<script type="module">
+import { ReachyMini } from 'https://cdn.jsdelivr.net/gh/pollen-robotics/reachy_mini@v1.7.1/js/reachy-mini.js';
+window.ReachyMini = ReachyMini;
+</script>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+//  APP STATE & BUSINESS LOGIC
+// ════════════════════════════════════════════════════════════════
+let CFG = {};
+let robot = null;
+let isLive = false;
+let ethersProvider = null;
+let ethersSigner = null;
+let gateContract = null;
+let walletAddress = null;
+let currentPayKey = null;
+
+// Gated behaviors configuration library
+let behaviorLibrary = {};
+const localBehaviorsFallback = {
+  "wave": { "tier": "free", "label": "Wave", "emoji": "👋", "sequence": [{"antennas": [60, -60], "duration": 300}, {"antennas": [-60, 60], "duration": 300}, {"antennas": [0,0], "duration": 200}], "tts": "Hey there!" },
+  "nod": { "tier": "free", "label": "Nod", "emoji": "✅", "sequence": [{"head": [0, -15, 0], "duration": 250}, {"head": [0, 10, 0], "duration": 250}, {"head": [0, 0, 0], "duration": 200}], "tts": "Yes, completely agree!" },
+  "shake": { "tier": "free", "label": "Shake", "emoji": "❌", "sequence": [{"head": [0, 0, -20], "duration": 200}, {"head": [0, 0, 20], "duration": 200}, {"head": [0, 0, 0], "duration": 200}], "tts": "I'm afraid not." },
+  "sleep": { "tier": "free", "label": "Sleep", "emoji": "😴", "sequence": [], "tts": "Going to sleep mode." },
+  "wake": { "tier": "free", "label": "Wake", "emoji": "☀️", "sequence": [], "tts": "System active." },
+  "dance": { "tier": "premium", "price_wei": "10000000000000000", "price_display": "0.01 0G", "label": "Happy Dance", "emoji": "🕺", "sequence": [{"head": [10, 0, 20], "antennas": [40, -40], "duration": 350}, {"head": [-10, 0, -20], "antennas": [-40, 40], "duration": 350}, {"head": [0, 0, 0], "antennas": [0, 0], "duration": 300}], "tts": "Let's dance!" },
+  "fortune": { "tier": "premium", "price_wei": "5000000000000000", "price_display": "0.005 0G", "label": "Fortune", "emoji": "🔮", "sequence": [{"head": [0, -20, 0], "antennas": [50, 50], "duration": 600}, {"head": [0, 0, 0], "antennas": [0, 0], "duration": 400}], "tts": "The blockchain sees a bright future for you." },
+  "backflip": { "tier": "premium", "price_wei": "20000000000000000", "price_display": "0.02 0G", "label": "Spin Out", "emoji": "🌀", "sequence": [{"head": [0, 0, 30], "duration": 200}, {"head": [0, 0, -30], "duration": 200}, {"head": [0, 0, 0], "duration": 200}], "tts": "Wooo! Feel the spin!" }
+};
+
+// Auto-fill configuration helper
+(function restoreConfig() {
+  const saved = sessionStorage.getItem('chain-reaction-cfg');
+  if (!saved) return;
+  try {
+    const s = JSON.parse(saved);
+    if (s.chatKey) document.getElementById('cfg-chat-key').value = s.chatKey;
+    if (s.sttKey) document.getElementById('cfg-stt-key').value = s.sttKey;
+    if (s.contractAddr) document.getElementById('cfg-contract-addr').value = s.contractAddr;
+    if (s.rootHash) document.getElementById('cfg-root-hash').value = s.rootHash;
+    if (s.mode) document.getElementById('cfg-robot').value = s.mode;
+  } catch (_) {}
+})();
+
+// ════════════════════════════════════════════════════════════════
+//  0G STORAGE / LIBRARY FETCH
+// ════════════════════════════════════════════════════════════════
+async function loadBehaviorLibrary(rootHash) {
+  if (rootHash) {
+    try {
+      logChain(`Fetching behavior library from 0G Storage gateway...`);
+      // Simulating a storage fetch from the gateway
+      const res = await fetch(`https://rpc-storage-testnet.0g.ai/download/${rootHash}`);
+      if (res.ok) {
+        const data = await res.json();
+        behaviorLibrary = data.behaviors || localBehaviorsFallback;
+        logChain(`Successfully loaded behaviors from 0G Storage! Root Hash: ${rootHash.slice(0, 10)}...`);
+        return;
+      }
+    } catch (e) {
+      logChain(`Storage fetch failed, falling back to local configurations.`);
+    }
+  }
+  // Load local configuration as fallback
+  behaviorLibrary = localBehaviorsFallback;
+  logChain(`Loaded local behaviors library.`);
+}
+
+// ════════════════════════════════════════════════════════════════
+//  0G CHAIN / METAMASK ACTIONS
+// ════════════════════════════════════════════════════════════════
+const GATE_ABI = [
+  "function isUnlocked(address user, string key) view returns (bool)",
+  "function unlock(string key) payable",
+  "function behaviorPrice(string key) view returns (uint256)",
+  "function checkBatch(address user, string[] keys) view returns (bool[])"
+];
+
+const OG_CHAIN_PARAMS = {
+  chainId: '0x40D8', // 16600
+  chainName: '0G Chain Testnet',
+  rpcUrls: ['https://evmrpc-testnet.0g.ai'],
+  nativeCurrency: { name: '0G Token', symbol: '0G', decimals: 18 },
+  blockExplorerUrls: ['https://testnet.0gscan.ai']
+};
+
+async function connectWallet() {
+  if (!window.ethereum) {
+    alert("MetaMask is required to use the 0G Chain features.");
+    return;
+  }
+  try {
+    ethersProvider = new ethers.BrowserProvider(window.ethereum);
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    walletAddress = accounts[0];
+    ethersSigner = await ethersProvider.getSigner();
+
+    // Verify correct chain
+    const net = await ethersProvider.getNetwork();
+    if (net.chainId !== 16600n) {
+      logChain("Switching wallet connection to 0G Chain Testnet...");
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x40D8' }]
+        });
+      } catch (err) {
+        if (err.code === 4902) {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [OG_CHAIN_PARAMS]
+          });
+        } else {
+          throw err;
+        }
+      }
+    }
+
+    // Bind contract instance
+    if (CFG.contractAddr) {
+      gateContract = new ethers.Contract(CFG.contractAddr, GATE_ABI, ethersSigner);
+    }
+
+    document.getElementById('wallet-btn').classList.add('connected');
+    document.getElementById('wallet-status-text').textContent = walletAddress.slice(0,6) + '...' + walletAddress.slice(-4);
+    logChain(`Wallet connected: ${walletAddress}`);
+
+    await refreshBehaviorGrid();
+  } catch (e) {
+    logChain(`Wallet connection failed: ${e.message}`);
+  }
+}
+
+async function refreshBehaviorGrid() {
+  const grid = document.getElementById('behavior-grid');
+  grid.innerHTML = '';
+
+  const keys = Object.keys(behaviorLibrary);
+  let unlockedStatus = {};
+
+  if (walletAddress && gateContract) {
+    try {
+      const results = await gateContract.checkBatch(walletAddress, keys);
+      keys.forEach((k, idx) => {
+        unlockedStatus[k] = results[idx];
+      });
+    } catch (e) {
+      logChain(`Failed to batch check on-chain unlocks: ${e.message}`);
+    }
+  }
+
+  keys.forEach(k => {
+    const item = behaviorLibrary[k];
+    const isPremium = item.tier === 'premium';
+    const isLocked = isPremium && !unlockedStatus[k];
+
+    const card = document.createElement('div');
+    card.className = 'behavior-card';
+    card.onclick = () => triggerBehaviorFromUI(k, isLocked);
+
+    card.innerHTML = `
+      <div class="behavior-info">
+        <span class="behavior-emoji">${item.emoji || '🤖'}</span>
+        <div>
+          <div class="behavior-name">${item.label}</div>
+          <span class="behavior-badge ${item.tier}">${item.tier}</span>
+        </div>
+      </div>
+      ${isPremium ? `
+        <div class="behavior-lock">
+          ${isLocked ? `
+            <svg fill="currentColor" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+          ` : `
+            <span style="color: var(--green); font-size: 11px; font-family: var(--font-mono)">UNLOCKED</span>
+          `}
+        </div>
+      ` : ''}
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ════════════════════════════════════════════════════════════════
+//  PAYMENT MODAL
+// ════════════════════════════════════════════════════════════════
+function showPayModal(key) {
+  currentPayKey = key;
+  const item = behaviorLibrary[key];
+  document.getElementById('pay-modal-emoji').textContent = item.emoji || '🔮';
+  document.getElementById('pay-modal-title').textContent = `Unlock ${item.label}`;
+  document.getElementById('pay-modal-price').textContent = item.price_display || '0.01 0G';
+  document.getElementById('pay-modal-overlay').classList.add('visible');
+}
+
+function closePayModal() {
+  document.getElementById('pay-modal-overlay').classList.remove('visible');
+  currentPayKey = null;
+}
+
+async function processPayment() {
+  if (!gateContract || !walletAddress) {
+    alert("Please connect your wallet first.");
+    return;
+  }
+  const btn = document.getElementById('pay-modal-action-btn');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Sign Tx in MetaMask...";
+
+  try {
+    const key = currentPayKey;
+    const item = behaviorLibrary[key];
+    const value = ethers.MinedTx ? item.price_wei : BigInt(item.price_wei);
+
+    logChain(`Initiating purchase for behavior: "${key}"`);
+    const tx = await gateContract.unlock(key, { value: value });
+    btn.textContent = "Mining transaction...";
+    logChain(`Tx sent: ${tx.hash}. Awaiting confirmation...`);
+
+    await tx.wait();
+    logChain(`Transaction confirmed! Behavior "${key}" unlocked.`);
+    addMsg('system', `On-chain Payment confirmed. "${item.label}" unlocked!`);
+
+    closePayModal();
+    await refreshBehaviorGrid();
+  } catch (e) {
+    logChain(`Payment failed: ${e.message}`);
+    alert(`Transaction error: ${e.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  START APPLICATION SESSION
+// ════════════════════════════════════════════════════════════════
+window.startApp = async function() {
+  const chatKey = document.getElementById('cfg-chat-key').value.trim();
+  const sttKey = document.getElementById('cfg-stt-key').value.trim();
+  const contractAddr = document.getElementById('cfg-contract-addr').value.trim();
+  const rootHash = document.getElementById('cfg-root-hash').value.trim();
+  const mode = document.getElementById('cfg-robot').value;
+
+  if (!chatKey) { alert("0G Chat key is required."); return; }
+
+  CFG = { chatKey, sttKey, contractAddr, rootHash, mode };
+  sessionStorage.setItem('chain-reaction-cfg', JSON.stringify(CFG));
+
+  // Initialize status & connection feedback
+  document.getElementById('setup').classList.add('hidden');
+  setStatus('verifying compute credentials...', false);
+
+  try {
+    // Ping/verify Chat Provider Endpoint
+    const res = await fetch('https://compute-network-1.integratenetwork.work/v1/proxy/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${CFG.chatKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'zai-org/GLM-5-FP8',
+        messages: [{ role: 'user', content: 'test connection' }],
+        max_tokens: 3
+      })
+    });
+    if (!res.ok) throw new Error("Escrow balance empty or provider connection timed out.");
+  } catch (e) {
+    document.getElementById('setup').classList.remove('hidden');
+    alert("Compute verification failed: " + e.message);
+    setStatus('offline');
+    return;
+  }
+
+  // Load configuration from 0G Storage
+  await loadBehaviorLibrary(CFG.rootHash);
+
+  // Initialize Reachy Robot API/Sim
+  await initRobot();
+
+  setStatus('connected', true);
+  addMsg('system', 'Compute verified. Reachy is awake and ready to react.');
+  logChain("0G Compute node connected. Ready to process voice transcripts.");
+  await refreshBehaviorGrid();
+};
+
+async function initRobot() {
+  if (CFG.mode === 'live') {
+    isLive = true;
+    robot = new window.ReachyMini();
+    const params = new URLSearchParams(location.search);
+    const token = params.get('hf');
+    if (token) {
+      await robot.connect(token);
+    } else {
+      try { await robot.login(); } catch(_) { await robot.connect(); }
+    }
+    await robot.startSession();
+    await robot.ensureAwake();
+    robot.attachVideo(document.getElementById('remoteVideo'));
+  } else {
+    isLive = false;
+    robot = new window.ReachySim(document.getElementById('sim-container'));
+    await new Promise(res => {
+      if (robot.ready) return res();
+      robot.addEventListener('ready', res, { once: true });
+    });
+    await robot.wakeUp();
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  AI brain / intent loop
+// ════════════════════════════════════════════════════════════════
+const chatHistory = [
+  {
+    role: 'system',
+    content: `You are Reachy, an expressive desk robot. You are intelligent, interactive, and connected to the 0G network.
+Your responses should be natural, brief (maximum 2 sentences).
+You MUST respond ONLY with a valid JSON block containing:
+{
+  "reply": "Your natural spoken voice reply goes here.",
+  "behavior": "wave|nod|shake|dance|fortune|backflip|sleep|wake or null",
+  "requires_payment": true/false
+}
+Select "requires_payment": true only if trigger behavior is: "dance", "fortune", or "backflip". Otherwise, false.`
+  }
+];
+
+async function askAI(prompt) {
+  chatHistory.push({ role: 'user', content: prompt });
+  const res = await fetch('https://compute-network-1.integratenetwork.work/v1/proxy/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${CFG.chatKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'zai-org/GLM-5-FP8',
+      messages: chatHistory.slice(-8),
+      max_tokens: 150
+    })
+  });
+  if (!res.ok) throw new Error(`Model Inference Error: ${res.status}`);
+  const data = await res.json();
+  const raw = (data.choices?.[0]?.message?.content || '').trim();
+
+  // Strip markdown styling if returned
+  const cleanJSON = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+  let parsed;
+  try {
+    parsed = JSON.parse(cleanJSON);
+  } catch(e) {
+    parsed = { reply: raw, behavior: null, requires_payment: false };
+  }
+  chatHistory.push({ role: 'assistant', content: JSON.stringify(parsed) });
+  return parsed;
+}
+
+// ════════════════════════════════════════════════════════════════
+//  MESSAGE SENDING & SEQUENCE PLAYBACK
+// ════════════════════════════════════════════════════════════════
+let processingMsg = false;
+
+window.sendMessage = async function() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || processingMsg) return;
+  input.value = '';
+  processingMsg = true;
+  document.getElementById('send-btn').disabled = true;
+
+  addMsg('user', text);
+  animateListening();
+
+  try {
+    const result = await askAI(text);
+    addMsg('bot', result.reply);
+    animateSpeaking();
+    const speakPromise = speak(result.reply);
+
+    if (result.behavior && behaviorLibrary[result.behavior]) {
+      const key = result.behavior;
+      const item = behaviorLibrary[key];
+
+      let isUnlocked = true;
+      if (item.tier === 'premium') {
+        if (walletAddress && gateContract) {
+          isUnlocked = await gateContract.isUnlocked(walletAddress, key);
+        } else {
+          isUnlocked = false; // Gated if wallet is disconnected
+        }
+      }
+
+      if (isUnlocked) {
+        await executeBehavior(key);
+      } else {
+        addMsg('system', `Action "${item.label}" is currently locked on-chain.`);
+        showPayModal(key);
+      }
+    }
+
+    await speakPromise;
+    animateIdle();
+  } catch (e) {
+    addMsg('system', 'Error: ' + e.message);
+    animateIdle();
+  } finally {
+    processingMsg = false;
+    document.getElementById('send-btn').disabled = false;
+  }
+};
+
+async function triggerBehaviorFromUI(key, isLocked) {
+  if (isLocked) {
+    showPayModal(key);
+  } else {
+    addMsg('system', `Executing behavior: "${behaviorLibrary[key].label}"`);
+    await executeBehavior(key);
+  }
+}
+
+async function executeBehavior(key) {
+  const item = behaviorLibrary[key];
+  if (!item || !robot) return;
+
+  if (key === 'sleep') { robot.gotoSleep?.(); return; }
+  if (key === 'wake') { robot.wakeUp?.(); return; }
+
+  const sequence = item.sequence || [];
+  for (const step of sequence) {
+    if (step.head) {
+      const [r, p, y] = step.head;
+      robot.setHeadRpyDeg?.(r || 0, p || 0, y || 0);
+    }
+    if (step.antennas) {
+      const [l, r] = step.antennas;
+      robot.setAntennasDeg?.(l || 0, r || 0);
+    }
+    await sleep(step.duration_ms || step.duration || 300);
+  }
+  animateIdle();
+}
+
+// ════════════════════════════════════════════════════════════════
+//  SPEECH CAPTURE & AUDIO PIPELINE
+// ════════════════════════════════════════════════════════════════
+let mediaRecorder = null;
+let audioChunks = [];
+let recordTimer = null;
+let recordStartTime = 0;
+let visualizerFrame = null;
+let audioCtx = null;
+let analyserNode = null;
+
+window.toggleRecording = async function() {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    stopRecording();
+  } else {
+    await startRecording();
+  }
+};
+
+async function startRecording() {
+  if (!CFG.sttKey) { alert("Please configure a valid Whisper STT key in settings."); return; }
+  try {
+    let stream;
+    if (isLive) {
+      const vid = document.getElementById('remoteVideo');
+      const robotTracks = vid?.srcObject?.getAudioTracks?.() || [];
+      stream = robotTracks.length ? new MediaStream(robotTracks) : await navigator.mediaDevices.getUserMedia({ audio: true });
+    } else {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    }
+
+    // Live Web Audio analyser for the visualizer waveform
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const src = audioCtx.createMediaStreamSource(stream);
+    analyserNode = audioCtx.createAnalyser();
+    analyserNode.fftSize = 64;
+    src.connect(analyserNode);
+    drawVisualWaveform();
+
+    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+    mediaRecorder.onstop = async () => {
+      cancelAnimationFrame(visualizerFrame);
+      clearInterval(recordTimer);
+      try { audioCtx.close(); } catch(_) {}
+
+      document.getElementById('input-recording').style.display = 'none';
+      document.getElementById('input-default').style.display = '';
+
+      if (audioChunks.length === 0) return;
+      const duration = Date.now() - recordStartTime;
+      if (duration < 600) { addMsg('system', 'Recording too short.'); return; }
+
+      const rawBlob = new Blob(audioChunks, { type: 'audio/webm;codecs=opus' });
+      addMsg('system', 'Transcribing audio...');
+      try {
+        const text = await transcribeSpeech(rawBlob);
+        if (text.trim()) {
+          document.getElementById('chat-input').value = text;
+          sendMessage();
+        } else {
+          addMsg('system', 'Could not detect speech.');
+        }
+      } catch (e) {
+        addMsg('system', 'Transcription failed: ' + e.message);
+      }
+    };
+
+    recordStartTime = Date.now();
+    mediaRecorder.start(250);
+
+    document.getElementById('input-default').style.display = 'none';
+    document.getElementById('input-recording').style.display = '';
+
+    updateTimerDisplay();
+    recordTimer = setInterval(updateTimerDisplay, 1000);
+  } catch(e) {
+    addMsg('system', 'Microphone capture error: ' + e.message);
+  }
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach(t => t.stop());
+  }
+}
+
+function updateTimerDisplay() {
+  const diffSecs = Math.floor((Date.now() - recordStartTime) / 1000);
+  const mins = Math.floor(diffSecs / 60);
+  const secs = diffSecs % 60;
+  document.getElementById('rec-timer').textContent = `${mins}:${String(secs).padStart(2, '0')}`;
+}
+
+function drawVisualWaveform() {
+  const canvas = document.getElementById('rec-waveform');
+  const ctx = canvas.getContext('2d');
+  const bufferLength = analyserNode.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+
+  function draw() {
+    visualizerFrame = requestAnimationFrame(draw);
+    analyserNode.getByteFrequencyData(dataArray);
+
+    const w = canvas.width = canvas.clientWidth * (window.devicePixelRatio || 1);
+    const h = canvas.height = 32 * (window.devicePixelRatio || 1);
+    ctx.clearRect(0, 0, w, h);
+
+    const barWidth = w / bufferLength;
+    const centerY = h / 2;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    for (let i = 0; i < bufferLength; i++) {
+      const normalValue = dataArray[i] / 255;
+      const barHeight = Math.max(2, normalValue * centerY * 0.9);
+      const x = i * barWidth;
+      ctx.beginPath();
+      ctx.roundRect(x + 1, centerY - barHeight, Math.max(1, barWidth - 2), barHeight * 2, 1);
+      ctx.fill();
+    }
+  }
+  draw();
+}
+
+async function webmBlobToWav(blob) {
+  const arrayBuffer = await blob.arrayBuffer();
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+  try { audioContext.close(); } catch(_) {}
+  
+  const chData = audioBuffer.getChannelData(0);
+  const length = chData.length;
+  const sampleRate = audioBuffer.sampleRate;
+  const outputBuffer = new ArrayBuffer(44 + length * 2);
+  const view = new DataView(outputBuffer);
+  
+  const writeString = (offset, string) => {
+    for (let i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
+    }
+  };
+  
+  writeString(0, 'RIFF');
+  view.setUint32(4, 36 + length * 2, true);
+  writeString(8, 'WAVE');
+  writeString(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  writeString(36, 'data');
+  view.setUint32(40, length * 2, true);
+  
+  let offset = 44;
+  for (let i = 0; i < length; i++) {
+    const s = Math.max(-1, Math.min(1, chData[i]));
+    view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    offset += 2;
+  }
+  return new Blob([outputBuffer], { type: 'audio/wav' });
+}
+
+async function transcribeSpeech(webmBlob) {
+  const wavBlob = await webmBlobToWav(webmBlob);
+  const data = new FormData();
+  data.append('file', wavBlob, 'audio.wav');
+  data.append('model', 'openai/whisper-large-v3');
+  data.append('response_format', 'json');
+
+  const res = await fetch('https://compute-network-16.integratenetwork.work/v1/proxy/audio/transcriptions', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${CFG.sttKey}` },
+    body: data
+  });
+  if (!res.ok) throw new Error(`STT compute proxy returned error status: ${res.status}`);
+  const out = await res.json();
+  return out.text || '';
+}
+
+// ════════════════════════════════════════════════════════════════
+//  ROBOT MOTION TRIGGERS & FEEDBACK
+// ════════════════════════════════════════════════════════════════
+function animateListening() {
+  if (!robot) return;
+  robot.setAntennasDeg?.(15, -15);
+  robot.setHeadRpyDeg?.(0, -3, 0);
+}
+
+function animateSpeaking() {
+  if (!robot) return;
+  robot.setHeadRpyDeg?.(0, 0, 0);
+  let count = 0;
+  const loop = setInterval(() => {
+    if (count++ > 6) { clearInterval(loop); return; }
+    const offset = (count % 2 === 0) ? 20 : -20;
+    robot.setAntennasDeg?.(offset, -offset);
+  }, 300);
+}
+
+function animateIdle() {
+  if (!robot) return;
+  robot.setHeadRpyDeg?.(0, 0, 0);
+  robot.setAntennasDeg?.(0, 0);
+}
+
+function speak(text) {
+  if (!('speechSynthesis' in window)) return Promise.resolve();
+  speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 1.05;
+  utterance.pitch = 1.1;
+  speechSynthesis.speak(utterance);
+  return new Promise(res => {
+    utterance.onend = res;
+    utterance.onerror = res;
+  });
+}
+
+// ════════════════════════════════════════════════════════════════
+//  UTIL HELPERS
+// ════════════════════════════════════════════════════════════════
+function addMsg(role, text) {
+  const el = document.createElement('div');
+  el.className = `msg ${role}`;
+  el.textContent = text;
+  const t = document.getElementById('transcript');
+  t.appendChild(el);
+  t.scrollTop = t.scrollHeight;
+}
+
+function setStatus(text, success = false) {
+  const el = document.getElementById('status');
+  el.textContent = text;
+  el.className = success ? 'connected' : (text === 'error' ? 'error' : '');
+}
+
+function logChain(msg) {
+  const feed = document.getElementById('feed-content');
+  const item = document.createElement('div');
+  item.className = 'feed-item';
+  
+  const time = new Date().toLocaleTimeString();
+  item.innerHTML = `<span class="feed-time">[${time}]</span> ${msg}`;
+  feed.appendChild(item);
+  feed.scrollTop = feed.scrollHeight;
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+document.getElementById('chat-input')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+</script>
+</body>
+</html>
