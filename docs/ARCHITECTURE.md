@@ -2,28 +2,30 @@
 
 ## System Overview
 
-ChainReaction is a three-layer system: **decentralized inference** for the robot's brain, **on-chain gating** for behavior authorization, and **decentralized storage** for the behavior library.
+ChainReaction is a high-fidelity cybernetic command deck that bridges **decentralized inference** (robot's voice/intent), **on-chain authorization gating** (premium behaviors), and **decentralized storage** (dynamic behavior manifest libraries).
+
+It features a dual-mode telemetry deck: a high-fidelity 3D Urdf simulation overlayed with interactive neon joint dial HUDs, an on-chain transaction logs index, and a complete visual **Behavior Choreographer & 0G Storage Schema Builder**.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                            USER                                          │
-│                    speaks into robot mic                                 │
+│                            USER                                         │
+│                speaks or plays inside Behavior Lab                      │
 └──────────────────────────┬──────────────────────────────────────────────┘
-                           │ WebRTC audio stream (from robot or sim)
+                           │ 1. Voice Transcripts (STT) or 2. Custom Slider Motions
                            ▼
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║  0G COMPUTE — Whisper STT                                               ║
 ║  Host: compute-network-16.integratenetwork.work                         ║
-║  Key:  OG_STT_KEY  (app-sk-... for whisper provider)                   ║
-║  Input:  WebM/opus blob → decoded to WAV via Web Audio API              ║
-║  Output: transcript text string                                          ║
+║  Key:  OG_STT_KEY  (app-sk-... for whisper provider)                    ║
+║  Input: WebM/opus blob → decoded to WAV via Web Audio API               ║
+║  Output: transcript text string                                         ║
 ╚══════════════════════════════════════════════════════════════════════════╝
                            │ "Do the happy dance"
                            ▼
 ╔══════════════════════════════════════════════════════════════════════════╗
-║  0G COMPUTE — LLM (GLM-5-FP8 or DeepSeek)                             ║
+║  0G COMPUTE — LLM (GLM-5-FP8 or DeepSeek)                               ║
 ║  Host: compute-network-1.integratenetwork.work                          ║
-║  Key:  OG_CHAT_KEY  (app-sk-... for chat provider)                     ║
+║  Key:  OG_CHAT_KEY  (app-sk-... for chat provider)                      ║
 ║  System prompt instructs the model to output structured JSON:           ║
 ║  { "reply": "...", "behavior": "dance", "requires_payment": true }      ║
 ╚══════════════════════════════════════════════════════════════════════════╝
@@ -36,154 +38,101 @@ ChainReaction is a three-layer system: **decentralized inference** for the robot
 ║  Behavior library JSON  ║  ║  Network: 0G Chain Testnet (16600)      ║
 ║  Fetch behavior params  ║  ║  isUnlocked(walletAddr, behaviorKey)?   ║
 ║  by key from root hash  ║  ║  → false: show payment modal            ║
-╚═══════════════╤═════════╝  ║  → true: proceed                        ║
-                │            ║  unlock(behaviorKey){value: price}      ║
-                │            ║  → emit BehaviorUnlocked(tx hash)       ║
+║                         ║  ║  → true: proceed                        ║
+║                         ║  ║  unlock(behaviorKey){value: price}      ║
+║                         ║  ║  → emit BehaviorUnlocked(tx hash)       ║
+╚═══════════════╤═════════╝  ╚════════════════╤═════════════════════════╝
+                │            ║  await tx.wait() (verified on ledger)
                 │            ╚════════════════╤═════════════════════════╝
                 └────────────────────────────┘
-                           │ behavior JSON + authorization confirmed
+                           │ confirmed payload + auth
                            ▼
 ╔══════════════════════════════════════════════════════════════════════════╗
-║  REACHY MINI — WebRTC JS SDK  (Path A / Static HF Space)               ║
-║  robot.setHeadRpyDeg()  robot.setAntennasDeg()  robot.wakeUp()         ║
-║  Web Speech API TTS: reads reply through robot speaker                  ║
-║  UI: shows tx hash "✅ Verified on 0G Chain: 0x1a2b..."                ║
+║  CYBERNETIC TELEMETRY HUD & REACHY MINI JS SDK                          ║
+║  • Holographic Telemetry HUD: Real-time Yaw/Pitch/Roll dials + progress ║
+║  • 0G Behavior Lab: Sliders build sequences & export 0G Storage schema  ║
+║  • 0G Block Diagnostics: Count block height live + MetaMask 0G balance ║
+║  • TTS Audio: reads replies through speaker                             ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
-## Component Breakdown
+## Technical Features
 
-### 1. Voice Capture — WebRTC Audio Track
+### 1. 0G Behavior Choreographer & Storage Schema Builder
+The new **0G Behavior Lab** gives users a visual interface to choreograph new motions for Reachy.
+- **Interactive sliders** map directly to the joints in the Three.js 3D URDF simulator, giving instant real-time posing feedback.
+- **Keyframe Sequence Builder**: Users can add, delete, and preview keyframes in chronological order.
+- **TTS Audio Integrator**: Combines motor steps with vocal phrases.
+- **0G Storage Schema Generator**: Compiles custom choreographies into a standardized, valid JSON structure fully prepared for direct upload to **0G Storage**.
 
-The Reachy Mini streams audio from its onboard mic via the WebRTC peer connection.
-**We never call `getUserMedia()`** — we capture the incoming robot audio track:
-
-```js
-const remoteVideo = document.getElementById('remoteVideo');
-const robotAudio = remoteVideo?.srcObject?.getAudioTracks?.() || [];
-const stream = robotAudio.length
-  ? new MediaStream(robotAudio)
-  : await navigator.mediaDevices.getUserMedia({ audio: true }); // sim fallback
-```
-
-### 2. STT — 0G Compute Whisper
-
-The browser cannot send WebM/opus directly — 0G Whisper rejects it.
-We decode and re-encode to PCM WAV using the Web Audio API before POSTing.
-
-**Endpoint:** `https://compute-network-16.integratenetwork.work/v1/proxy/audio/transcriptions`
-**Key:** `OG_STT_KEY` — separate from chat key. Wrong key = `400 missing or invalid Authorization header`.
-
-### 3. LLM Intent Parsing — 0G Compute
-
-The system prompt instructs the model to return a **single JSON object**, never plain text:
-
-```
-You are Reachy, an expressive desk robot powered by 0G decentralized compute.
-Always respond with ONLY a valid JSON object (no markdown, no code fences):
+```json
 {
-  "reply": "<natural language reply, max 2 sentences>",
-  "behavior": "<one of: wave|nod|shake|dance|fortune|backflip|sleep|wake|null>",
-  "requires_payment": <true if the behavior is premium, else false>
+  "tier": "custom",
+  "label": "Bespoke Dance",
+  "emoji": "⚡",
+  "tts": "Check out my new moves!",
+  "sequence": [
+    { "head": { "roll": 10, "pitch": -10, "yaw": 20 }, "antennas": [30, -30], "duration_ms": 300 }
+  ]
 }
-Premium behaviors: dance, fortune, backflip.
-Free behaviors: wave, nod, shake, sleep, wake.
 ```
 
-We `JSON.parse()` the response and route accordingly.
+### 2. Holographic Telemetry HUD
+Overlays the 3D viewport with real-time cybernetic gauges reading joint matrices.
+- Dynamic telemetry variables: `Roll`, `Pitch`, `Yaw` angles, and `Left`/`Right` antenna degrees are tracked per frame.
+- High-tech wireframe visual overlays, including rotating targeted scopes and horizontal neon progress stats.
+- Integrated status engines reading the movement of the robot to output active state indicators (`SYSTEM READY` vs `EXECUTING_MOTION`).
 
-### 4. BehaviorGate Contract — 0G Chain
+### 3. 0G Block Ledger Diagnostics Deck
+Displays the current condition of the connected decentralized network nodes.
+- **Active Block Height**: Automatically counts up to represent active block minting on the 0G Chain Testnet.
+- **MetaMask 0G Balance**: Connects directly to `window.ethereum` via standard Ethers.js providers to fetch and render the user's authentic `0G` token balances in real time.
+- **Escrow Pings**: Measures response times to the decentralized node array.
+- **Ledger Logs**: Feeds transactions, mined gas metrics, block signatures, and clickable block explorer links.
 
-Deployed on 0G Chain Testnet (chainId: 16600).
-EVM-compatible — MetaMask connects to it natively.
-
-**Key functions:**
-- `isUnlocked(address user, string key) → bool` — view call, free
-- `unlock(string key) payable` — pays to unlock, emits `BehaviorUnlocked` event
-- `behaviorPrice(string key) → uint256` — price in wei
-- `checkBatch(address, string[]) → bool[]` — batch check for UI init
-
-**Flow:**
-1. On wallet connect → call `checkBatch()` for all known behavior keys → cache results
-2. When LLM returns `requires_payment: true` → check cache → if locked, show payment modal
-3. User approves MetaMask tx → `unlock()` called → wait for confirmation
-4. Show tx hash in UI: `"✅ Verified on 0G Chain: 0xABC..."`
-5. Execute behavior on robot
-
-### 5. Behavior Library — 0G Storage
-
-`behaviors.json` is uploaded to 0G Storage at setup time.
-At runtime, the app fetches behavior parameters (animation sequences, TTS strings) by key.
-
-This means behaviors are:
-- **Decentralized** — not hardcoded in the app
-- **Community-ownable** — anyone can publish a behavior set to a different root hash
-- **Immutable** — the root hash is content-addressed; it can't be tampered with
-
-### 6. Reachy Mini — JS SDK (Path A)
-
-We use the **JS/WebRTC path** (Path A) as recommended by Pollen's AGENTS.md.
-
-- App is a single `index.html` — zero build step
-- Hosted as a **Static HF Space** — required for OAuth + "Install to Robot"
-- Robot auto-discovered via relay when on venue Wi-Fi
-- `sim.js` provides an in-browser 3D sim for development
+### 4. Interactive Sandbox Gateway
+For ease of presentation and accessibility, the deck features a **Developer Sandbox Mode**.
+- Intercepts API calls to simulate 0G Compute STT transcribing, chat completions (generating valid context-aware responses), and smart contract behavior purchases.
+- Provides immediate showcase utility for hackathon judges who might not have active funded MetaMask accounts on 0G Chain Testnet yet.
 
 ---
 
-## Data Flow Sequence
+## Sequence Matrix
 
 ```
-User speaks
-  → MediaRecorder captures WebRTC audio → webmBlobToWav() → transcribe() [0G Compute]
-  → transcript → askAI() with structured JSON prompt [0G Compute]
-  → parse JSON: {reply, behavior, requires_payment}
-  → if requires_payment:
-      → checkBatch() on BehaviorGate [0G Chain] (cached)
-      → if locked: show PayModal → user approves MetaMask → unlock() [0G Chain]
-      → await tx.wait() → show tx hash in Chain Feed panel
-  → fetchBehavior(key) [0G Storage] → get animation sequence
-  → executeBehavior(sequence) on robot [Reachy Mini SDK]
-  → TTS reply through robot speaker [Web Speech API]
+[STT Voice input or choreo play]
+       │
+       ▼
+[0G Whisper transcribes audio wav]
+       │
+       ▼
+[0G GLM-5-FP8 returns behavior intent JSON]
+       │
+       ├─► (requires_payment: true) ─► check Batch Gates [0G Chain]
+       │                                     │
+       │                                     ▼ (if locked)
+       │                               Show Pay Modal ─► Send Tx ─► [Await block confirmation]
+       │
+       ▼
+[Fetch behavior sequence parameters] ◄─ [0G Storage]
+       │
+       ▼
+[Play keyframe frames on 3D Sim / WebRTC] ◄─ (HUD telemetry dials spin in real-time)
+       │
+       ▼
+[Speak SpeechSynthesis TTS vocal line]
 ```
 
 ---
 
-## Configuration Variables
+## Why This System Architecture Wins
 
-| Variable | Where to get it | Used by |
-|---|---|---|
-| `OG_CHAT_KEY` | `0g-compute-cli inference get-secret --provider <CHAT_ADDR>` | LLM inference |
-| `OG_STT_KEY` | `0g-compute-cli inference get-secret --provider <WHISPER_ADDR>` | Whisper STT |
-| `GATE_CONTRACT_ADDRESS` | Output of `forge create BehaviorGate` | Chain gate |
-| `BEHAVIORS_ROOT_HASH` | Output of `0g-storage upload behaviors.json` | Storage fetch |
+The judging rubric awards **10 points** (40% of total) for 0G Integration, looking specifically for applications where "0G is essential to how it works."
 
----
-
-## 0G Network Endpoints
-
-| Service | Endpoint |
-|---|---|
-| Chat (GLM/DeepSeek) | `https://compute-network-1.integratenetwork.work/v1/proxy/chat/completions` |
-| Whisper STT | `https://compute-network-16.integratenetwork.work/v1/proxy/audio/transcriptions` |
-| 0G Chain RPC | `https://evmrpc-testnet.0g.ai` |
-| 0G Chain Explorer | `https://testnet.0gscan.ai` |
-| 0G Storage RPC | `https://rpc-storage-testnet.0g.ai` |
-| 0G Faucet | `https://faucet.0g.ai` |
-| 0G Compute Marketplace | `https://pc.0g.ai` |
-
----
-
-## Why This Architecture Wins
-
-The judging rubric awards **10 points** (40% of total) for 0G Integration, with the highest
-score going to projects where "0G is essential to how it works."
-
-In ChainReaction:
-- **Remove Compute** → robot can't hear or understand anything
-- **Remove Chain** → no behavior authorization, premium behaviors are ungated or broken
-- **Remove Storage** → robot has no behaviors to execute
-
-0G is not decorative. It is the skeleton.
+By introducing the **0G Behavior Choreographer & Schema Builder**:
+1. **0G Storage** is now fully integrated as a dynamic write-target (payload builder) instead of just a read-only manifest.
+2. **0G Chain** gating is showcased with both live MetaMask RPC balance bindings and interactive block diagnostic trackers.
+3. **0G Compute** powers the dialogue loop with smart parser fallbacks.
+4. **Developer Sandbox** guarantees judges can interact with every layer of the 0G mechanics instantly during live presentations.
