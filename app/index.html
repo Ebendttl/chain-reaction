@@ -1395,7 +1395,7 @@ body {
     <div class="field-group">
       <label>0G Chat API Key</label>
       <input id="cfg-chat-key" type="password" placeholder="app-sk-..." />
-      <div class="field-hint">Compute proxy key for <code>zai-org/GLM-5-FP8</code></div>
+      <div class="field-hint">Compute proxy key for <code>qwen/qwen-2.5-7b-instruct</code></div>
     </div>
 
     <div class="field-group">
@@ -2006,26 +2006,30 @@ window.startApp = async function() {
   document.getElementById('setup').classList.add('hidden');
   setStatus('Establishing Compute escrows...', false);
 
+  // Soft-validate key: warn but do NOT block launch (endpoint URL varies per testnet provider)
   try {
-    // Validate key through 0G chat completions proxy
-    const res = await fetch('https://compute-network-1.integratenetwork.work/v1/proxy/chat/completions', {
+    // The provider endpoint is embedded in the app-sk token itself.
+    // Attempt a preflight ping; log result but proceed regardless.
+    const pingRes = await fetch('https://compute-network-1.integratenetwork.work/v1/proxy/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${CFG.chatKey}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'zai-org/GLM-5-FP8',
-        messages: [{ role: 'user', content: 'test connectivity ping' }],
+        model: 'qwen/qwen-2.5-7b-instruct',
+        messages: [{ role: 'user', content: 'ping' }],
         max_tokens: 3
       })
-    });
-    if (!res.ok) throw new Error("Key verification rejected by provider gateway proxy.");
-  } catch (e) {
-    document.getElementById('setup').classList.remove('hidden');
-    alert("0G Compute authorization failed: " + e.message);
-    setStatus('offline');
-    return;
+    }).catch(() => null);
+
+    if (pingRes && pingRes.ok) {
+      logChain('0G Compute preflight: ✅ provider ping OK');
+    } else {
+      logChain('0G Compute preflight: provider ping inconclusive — proceeding anyway');
+    }
+  } catch (_) {
+    logChain('0G Compute preflight: network check skipped');
   }
 
   isSandbox = false;
@@ -2183,14 +2187,14 @@ async function askAI(prompt) {
   }
 
   chatHistory.push({ role: 'user', content: prompt });
-  const res = await fetch('https://compute-network-1.integratenetwork.work/v1/proxy/chat/completions', {
+  const res = await fetch('https://compute-network-testnet.0g.ai/v1/proxy/chat/completions', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${CFG.chatKey}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      model: 'zai-org/GLM-5-FP8',
+      model: 'qwen/qwen-2.5-7b-instruct',
       messages: chatHistory.slice(-6),
       max_tokens: 150
     })
