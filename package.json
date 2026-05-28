@@ -1,0 +1,16 @@
+{
+  "name": "chain-reaction",
+  "version": "1.0.0",
+  "description": "A Reachy Mini × 0G Chain application connecting decentralized AI and on-chain behaviors.",
+  "scripts": {
+    "dev": "npx -y http-server app -p 8765"
+  },
+  "keywords": [
+    "reachy-mini",
+    "zero-g",
+    "blockchain",
+    "robotics"
+  ],
+  "author": "",
+  "license": "ISC"
+}
