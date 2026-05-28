@@ -1,75 +1,73 @@
-# ⛓️ ChainReaction — A Reachy Mini × 0G Chain App
+# ⛓️ ChainReaction — 0G Cybernetic Command Deck
 
-> *"The only robot whose behaviors are gated by a smart contract."*
+> *"The first expressive robot whose choreography and premium behaviors are gated by decentralized blockchain smart contracts."*
 
-**ChainReaction** is a hackathon project built for the **Reachy Mini × 0G Hackathon**.
-It combines decentralized AI inference, on-chain behavior gating, and expressive robotics
-into a single live demo: speak a command → the blockchain decides what the robot does.
+**ChainReaction** is an advanced cybernetic control dashboard built for the **Reachy Mini × 0G Hackathon**. It bridges decentralized AI compute, decentralized immutable storage, and on-chain EVM behavior gating to control an expressive desk robot (or its high-fidelity 3D URDF simulator) through voice commands.
+
+This project has been transformed into an **EXTREMELY BLAZING HOT WORLD-STANDARD CYBERNETIC COMMAND DECK** with rich neon glassmorphism aesthetics, live holographic telemetry HUDs, a real-time blockchain node diagnostic console, and an interactive **0G Behavior Lab (Choreographer & Schema Exporter)**.
 
 ---
 
-## 🧩 What It Does
+## 🚀 Key Visual & Functional Breakthroughs
 
-| Layer | Technology | Role |
+### 1. Holographic Telemetry HUD
+The 3D URDF viewport has been overlayed with a futuristic wireframe head-up display (HUD):
+- **Live Joint Coordinate Gauges**: Tracks and updates head `Roll`, `Pitch`, `Yaw` angles and antenna degrees per frame from the Three.js model.
+- **Rotating Scope Reticles**: Highly detailed rotating cybernetic target crosshair overlay with scanline feeds.
+- **System State Tracker**: Real-time feedback indicators reading state vectors from the robot to display active state states (`SYSTEM READY` vs `EXECUTING_MOTION`).
+
+### 2. 0G Behavior Lab (Choreographer Panel)
+A full-featured visual robotics motion suite built directly into the sidebar:
+- **Interactive Joint Sliders**: Drag coordinate sliders to instantly move Reachy's head and antennas in the 3D simulator.
+- **Keyframe Manifest Builder**: Add poses, set transition durations (in ms), delete keyframes, and build complete motion macros.
+- **TTS Integrator & Playback test**: Preview the combined vocal phrase and custom choreographed sequence live.
+- **0G Storage Schema Exporter**: Generates a standardized, valid JSON configuration block ready to be uploaded to **0G Storage** or saved to behaviors manifests.
+
+### 3. 0G Block Ledger Diagnostics
+An integrated real-time blockchain monitor:
+- **Live Block Height Indicator**: Automatically increments blocks simulating real-time minting on the 0G Chain.
+- **MetaMask RPC Balance Binding**: Dynamically fetches and renders the user's authentic `0G` token balances from their connected wallet.
+- **Ping Metrics**: Real-time escrows latency response tracker.
+- **Transaction Streams Console**: Cybernetic command line showing gas costs, block signatures, transaction states, and links to the explorer.
+
+### 4. Interactive Sandbox Gateway
+Built-in **Developer Sandbox Mode** for frictionless showcases. 
+- Allows judges to immediately test the entire voice-transcribe loop, chat completions, and smart-contract payment gates with a single click, requiring **zero pre-configured API keys or token deposits**.
+
+---
+
+## 🧩 Architectural Blueprint
+
+| System Layer | Technology | Role |
 |---|---|---|
-| **Voice Input** | 0G Compute · Whisper STT | Transcribes speech from the robot's mic |
-| **AI Brain** | 0G Compute · GLM-5 / DeepSeek | Decides the reply and which behavior to trigger |
-| **Behavior Gate** | 0G Chain · `BehaviorGate.sol` | Smart contract: is this behavior unlocked for this wallet? |
-| **Behavior Library** | 0G Storage · `behaviors.json` | Community-owned behavior definitions (not hardcoded) |
-| **Robot Body** | Reachy Mini · WebRTC / JS SDK | Executes the behavior: head, antennas, TTS via speaker |
-
-Remove any one of these services — the product stops working. That's the point.
-
----
-
-## 📁 Project Structure
-
-```
-chain-reaction/
-├── app/
-│   ├── index.html        ← Single-file web app (zero build step)
-│   └── sim.js            ← 3D in-browser simulator (Three.js + URDF)
-├── contracts/
-│   └── BehaviorGate.sol  ← Solidity contract — deploy to 0G Chain
-├── behaviors.json        ← Behavior library — upload to 0G Storage
-├── docs/
-│   ├── SETUP.md          ← Step-by-step: keys, wallet, deploy, run
-│   ├── ARCHITECTURE.md   ← Full system diagram and data flow
-│   └── BUILD-PLAN.md     ← Phased build checklist
-└── README.md             ← You are here
-```
+| **Voice Processing** | 0G Compute · Whisper STT | High-speed transcription of incoming microphone WAV inputs |
+| **Cognitive Brain** | 0G Compute · GLM-5-FP8 / DeepSeek | Intent parsing returning structured JSON: `{reply, behavior, requires_payment}` |
+| **On-Chain Gate** | 0G Chain · `BehaviorGate.sol` | Secure Solidity gate: check behavior unlocks and process `0G` payments |
+| **Decentralized Library** | 0G Storage · `behaviors.json` | Immutable, community-owned behavior manifest sets |
+| **Cybernetic Body** | Reachy Mini · 3D URDF Sim / WebRTC | Real-time motion execution (Head RPY + antennas) + digital telemetry HUD |
 
 ---
 
 ## ⚡ Quick Start
 
-1. **Read `docs/SETUP.md`** — do every step before the event
-2. **Deploy the contract** — `contracts/BehaviorGate.sol` to 0G Chain testnet
-3. **Upload behaviors** — `behaviors.json` to 0G Storage, copy the root hash
-4. **Run the app** — `cd app && python3 -m http.server 8765`
-5. **Open** `http://localhost:8765` and paste your keys in the setup overlay
+### 1. Run the Command Deck Locally
+Initialize the development server using npm:
+```bash
+npm run dev
+```
+*Behind the scenes, this runs `http-server` via `npx` to securely serve the static app on port `8765`.*
 
-For the full architecture explanation see `docs/ARCHITECTURE.md`.
-For the phased build checklist see `docs/BUILD-PLAN.md`.
-
----
-
-## 🏆 Judging Strategy
-
-| Criterion | Target | How we hit it |
-|---|---|---|
-| 0G Integration | **9/10** | All 3 services: Compute (STT+LLM) + Chain (gate) + Storage (behaviors) |
-| Reachy Mini Use | **4/5** | Robot mic, head + antennas, TTS through speaker |
-| Creativity | **5/5** | On-chain-gated robot behaviors — never been done live |
-| Execution | **4/5** | 2-min tight demo script with live tx hash shown on screen |
-| **Total** | **22/25** | Tiebreaker won via 0G Integration score |
+### 2. Launch the Gateway
+1. Open `http://localhost:8765` in your browser.
+2. Choose your entry route:
+   - **Launch Developer Sandbox**: Instantly enters the workspace with preloaded mock environments, allowing complete flow tests (including transcribing and gated payments) in under 1 second.
+   - **Start Live System**: Input your minted **0G Compute keys**, deployed **BehaviorGate contract address**, **0G Storage behavior root hash**, and start syncing live transactions!
 
 ---
 
-## 🔗 Links
+## 🏆 Hackathon Winning Integration Points
 
-- 0G Compute marketplace: https://pc.0g.ai
-- 0G Chain testnet RPC: https://evmrpc-testnet.0g.ai (chainId: 16600)
-- 0G testnet faucet: https://faucet.0g.ai
-- Reachy Mini SDK: https://github.com/pollen-robotics/reachy_mini
-- Hackathon guide (reference only): https://github.com/0gfoundation/reachy-mini-hackathon
+- **Compute Gating**: The robot's ears (Whisper STT) and brain (GLM-5) are driven exclusively by 0G decentralized providers.
+- **Chain Gating**: MetaMask handles payments via `BehaviorGate.sol` on the `0G Chain Testnet` (16600), displaying gas logs and explorer links directly on the command deck.
+- **Storage Gating**: Dynamic movement schemas are fetched straight from content-addressed 0G Storage gateway hashes.
+- **Authoring System**: The **0G Behavior Lab** closes the loop by allowing users to compose, test, and compile new behaviors directly to 0G Storage JSON specifications.
