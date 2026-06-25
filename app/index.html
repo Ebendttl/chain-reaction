@@ -9,33 +9,33 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════════════════
-   CHAINREACTION THEME — Premium Cybernetic Command Deck
+   CHAINREACTION THEME — Refined Cybernetic Command Deck
    ═══════════════════════════════════════════════════════════ */
 :root {
-  --bg: #040108;
-  --surface-glass: rgba(10, 6, 22, 0.65);
-  --surface-glass-heavy: rgba(16, 10, 34, 0.85);
-  --surface-border: rgba(168, 85, 247, 0.25);
-  --surface-border-active: rgba(6, 182, 212, 0.5);
+  --bg: #09070f;
+  --surface-glass: rgba(14, 11, 22, 0.8);
+  --surface-glass-heavy: rgba(20, 16, 30, 0.95);
+  --surface-border: rgba(255, 255, 255, 0.08);
+  --surface-border-active: rgba(14, 165, 233, 0.3);
   
-  --primary: #c084fc; /* Pale Purple */
-  --accent: #d946ef;  /* Magenta */
-  --accent-glow: rgba(217, 70, 239, 0.35);
-  --cyan: #06b6d4;    /* 0G Cyan */
-  --cyan-glow: rgba(6, 182, 212, 0.4);
+  --primary: #9061f9; /* Subtle Violet */
+  --accent: #7c3aed;  /* Clean Violet Accent */
+  --accent-glow: transparent;
+  --cyan: #0ea5e9;    /* Clean Ocean Blue */
+  --cyan-glow: transparent;
   --emerald: #10b981;  /* Active state */
-  --emerald-glow: rgba(16, 185, 129, 0.4);
+  --emerald-glow: transparent;
   --amber: #f59e0b;
-  --crimson: #f43f5e;
-  --crimson-glow: rgba(244, 63, 94, 0.35);
+  --crimson: #ef4444;
+  --crimson-glow: transparent;
   
   --text-primary: #f8fafc;
   --text-secondary: #cbd5e1;
   --text-muted: #64748b;
   
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
   
   --font-display: 'Space Grotesk', sans-serif;
   --font-body: 'Outfit', sans-serif;
@@ -50,10 +50,6 @@
 body {
   font-family: var(--font-body);
   background: var(--bg);
-  background-image: 
-    radial-gradient(circle at 5% 5%, rgba(217, 70, 239, 0.12) 0%, transparent 35%),
-    radial-gradient(circle at 95% 95%, rgba(6, 182, 212, 0.12) 0%, transparent 40%),
-    radial-gradient(circle at 50% 50%, rgba(13, 10, 45, 0.8) 0%, var(--bg) 100%);
   color: var(--text-primary);
   height: 100vh;
   overflow: hidden;
@@ -66,7 +62,7 @@ body {
   grid-template-columns: 360px 1fr 400px;
   grid-template-rows: auto 1fr;
   height: 100vh;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+  background: #09070f;
 }
 
 /* Premium Mobile Bottom Navigation Bar & Layout Overrides */
@@ -114,7 +110,7 @@ body {
     left: 0;
     right: 0;
     height: 60px;
-    background: rgba(14, 8, 30, 0.9);
+    background: rgba(14, 8, 30, 0.95);
     backdrop-filter: blur(25px);
     border-top: 1px solid var(--surface-border);
     z-index: 999;
@@ -154,7 +150,6 @@ body {
   
   .mobile-nav-btn.active svg {
     color: var(--primary);
-    filter: drop-shadow(0 0 6px var(--accent-glow));
   }
   
   /* Scaled stats for mobile viewport inside HUD */
@@ -182,10 +177,6 @@ body {
   
   .hud-bar-graph {
     height: 3px !important;
-  }
-  
-  .hud-crosshair {
-    transform: translate(-50%, -50%) scale(0.65) !important;
   }
 }
 
@@ -219,10 +210,9 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 14px 24px;
-  background: rgba(4, 1, 8, 0.85);
-  backdrop-filter: blur(20px);
+  background: #09070f;
   border-bottom: 1px solid var(--surface-border);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   z-index: 100;
 }
 
@@ -233,22 +223,14 @@ body {
 }
 
 .topbar-logo-container {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 36px;
   height: 36px;
-  background: rgba(168, 85, 247, 0.15);
-  border: 1px solid var(--accent);
-  border-radius: 10px;
-  box-shadow: 0 0 12px var(--accent-glow);
-  animation: logo-glow 3s ease-in-out infinite alternate;
-}
-
-@keyframes logo-glow {
-  0% { box-shadow: 0 0 4px var(--accent-glow); border-color: rgba(217, 70, 239, 0.5); }
-  100% { box-shadow: 0 0 16px rgba(217, 70, 239, 0.8); border-color: var(--accent); }
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
 }
 
 .topbar-brand svg {
@@ -262,10 +244,7 @@ body {
   font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.03em;
-  background: linear-gradient(90deg, #fff 0%, var(--primary) 50%, var(--cyan) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  color: #ffffff;
 }
 
 .topbar-brand .tag {
@@ -273,8 +252,8 @@ body {
   font-family: var(--font-mono);
   color: var(--cyan);
   padding: 2px 8px;
-  background: rgba(6, 182, 212, 0.12);
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  background: rgba(14, 165, 233, 0.08);
+  border: 1px solid rgba(14, 165, 233, 0.2);
   border-radius: 6px;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -296,24 +275,22 @@ body {
   font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--surface-border);
-  border-radius: 100px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.3s var(--ease-out);
+  transition: all 0.2s var(--ease-out);
 }
 
 .wallet-btn:hover {
   border-color: var(--cyan);
-  background: rgba(6, 182, 212, 0.1);
-  box-shadow: 0 0 15px var(--cyan-glow);
+  background: rgba(14, 165, 233, 0.05);
   transform: translateY(-1px);
 }
 
 .wallet-btn.connected {
   border-color: var(--emerald);
-  background: rgba(16, 185, 129, 0.12);
-  box-shadow: 0 0 10px var(--emerald-glow);
+  background: rgba(16, 185, 129, 0.08);
 }
 
 .wallet-btn svg { width: 15px; height: 15px; color: var(--cyan); }
@@ -336,28 +313,18 @@ body {
   height: 8px;
   border-radius: 50%;
   background: var(--text-muted);
-  transition: all 0.3s ease;
 }
 
 #status-indicator.connected { color: var(--emerald); }
 #status-indicator.connected::before {
   background: var(--emerald);
-  box-shadow: 0 0 10px var(--emerald);
-  animation: pulse 1.8s infinite;
-}
-
-@keyframes pulse {
-  0% { transform: scale(0.9); opacity: 0.6; }
-  50% { transform: scale(1.2); opacity: 1; }
-  100% { transform: scale(0.9); opacity: 0.6; }
 }
 
 /* ═══════════════════════════════════════════════════════════
    LEFT SIDEBAR: BEHAVIORS & CHOREOGRAPHER LAB
    ═══════════════════════════════════════════════════════════ */
 .sidebar-left {
-  background: rgba(8, 4, 18, 0.7);
-  backdrop-filter: blur(15px);
+  background: #09070f;
   border-right: 1px solid var(--surface-border);
   display: flex;
   flex-direction: column;
@@ -368,7 +335,7 @@ body {
 .sidebar-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.2);
   border-bottom: 1px solid var(--surface-border);
   padding: 6px;
   gap: 4px;
@@ -396,8 +363,8 @@ body {
 
 .tab-btn.active {
   color: var(--primary);
-  background: rgba(168, 85, 247, 0.15);
-  border: 1px solid rgba(168, 85, 247, 0.25);
+  background: rgba(144, 97, 249, 0.1);
+  border: 1px solid rgba(144, 97, 249, 0.2);
   box-shadow: inset 0 0 8px rgba(168, 85, 247, 0.1);
 }
 
