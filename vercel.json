@@ -1,5 +1,9 @@
 {
-  "rewrites": [
-    { "source": "/:path*", "destination": "/app/:path*" }
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/app/index.html",
+      "permanent": true
+    }
   ]
 }
