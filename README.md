@@ -4,16 +4,15 @@
 
 **ChainReaction** is an advanced cybernetic control dashboard built for the **Reachy Mini × 0G Hackathon**. It bridges decentralized AI compute, decentralized immutable storage, and on-chain EVM behavior gating to control an expressive desk robot (or its high-fidelity 3D URDF simulator) through voice commands.
 
-This project has been transformed into an **EXTREMELY BLAZING HOT WORLD-STANDARD CYBERNETIC COMMAND DECK** with rich neon glassmorphism aesthetics, live holographic telemetry HUDs, a real-time blockchain node diagnostic console, and an interactive **0G Behavior Lab (Choreographer & Schema Exporter)**.
+This project has been transformed into a **REFINED, HIGH-PERFORMANCE CYBERNETIC COMMAND DECK** with clean typography, slate-tinted dark interfaces, real-time blockchain node diagnostic console, and an interactive **0G Behavior Lab (Choreographer & Schema Exporter)**.
 
 ---
 
-## 🚀 Key Visual & Functional Breakthroughs
+## 🚀 Key Visual & Functional Features
 
-### 1. Holographic Telemetry HUD
-The 3D URDF viewport has been overlayed with a futuristic wireframe head-up display (HUD):
+### 1. Unified Telemetry HUD
+The 3D URDF viewport features a clean telemetry overlay:
 - **Live Joint Coordinate Gauges**: Tracks and updates head `Roll`, `Pitch`, `Yaw` angles and antenna degrees per frame from the Three.js model.
-- **Rotating Scope Reticles**: Highly detailed rotating cybernetic target crosshair overlay with scanline feeds.
 - **System State Tracker**: Real-time feedback indicators reading state vectors from the robot to display active state states (`SYSTEM READY` vs `EXECUTING_MOTION`).
 
 ### 2. 0G Behavior Lab (Choreographer Panel)
@@ -28,7 +27,7 @@ An integrated real-time blockchain monitor:
 - **Live Block Height Indicator**: Automatically increments blocks simulating real-time minting on the 0G Chain.
 - **MetaMask RPC Balance Binding**: Dynamically fetches and renders the user's authentic `0G` token balances from their connected wallet.
 - **Ping Metrics**: Real-time escrows latency response tracker.
-- **Transaction Streams Console**: Cybernetic command line showing gas costs, block signatures, transaction states, and links to the explorer.
+- **Transaction Streams Console**: Cybernetic console showing gas costs, block signatures, transaction states, and links to the explorer.
 
 ### 4. Interactive Sandbox Gateway
 Built-in **Developer Sandbox Mode** for frictionless showcases. 
@@ -71,3 +70,14 @@ npm run dev
 - **Chain Gating**: MetaMask handles payments via `BehaviorGate.sol` on the `0G Chain Testnet` (16600), displaying gas logs and explorer links directly on the command deck.
 - **Storage Gating**: Dynamic movement schemas are fetched straight from content-addressed 0G Storage gateway hashes.
 - **Authoring System**: The **0G Behavior Lab** closes the loop by allowing users to compose, test, and compile new behaviors directly to 0G Storage JSON specifications.
+
+---
+
+## 📚 Project Documentation
+
+- [Setup & Deployment Guide](docs/SETUP.md)
+- [System Architecture & Flow](docs/ARCHITECTURE.md)
+- [Phased Build Plan](docs/BUILD-PLAN.md)
+- [Contributing Guidelines](CONTRIBUTING.md)
+- [Security Policy](SECURITY.md)
+- [ISC License](LICENSE)
